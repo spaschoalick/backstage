@@ -1,0 +1,17 @@
+apiVersion: daki.database.example.com/v1alpha1
+kind: DakiPostgresDatabase
+metadata:
+  name: ${{ values.claimName }}
+  labels:
+    environment: ${{ values.environment }}
+    managed-by: backstage
+  annotations:
+    backstage.io/managed-by-location: backstage
+    backstage.io/created-at: ${{ '' | now }}
+spec:
+  parameters:
+    databaseName: ${{ values.databaseName }}
+    connectionLimit: ${{ values.connectionLimit }}
+    allowConnections: ${{ values.allowConnections }}
+    deletionPolicy: ${{ values.deletionPolicy }}
+    providerConfigRef: ${{ values.providerConfigRef }}
