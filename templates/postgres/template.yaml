@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: daki-postgres-database
   title: Daki PostgreSQL Database
-  description: Cria um database PostgreSQL usando Crossplane
+  description: Cria um database PostgreSQL usando Crossplane e abre um PR
   tags:
     - crossplane
     - postgresql
@@ -11,7 +11,7 @@ metadata:
     - daki
 spec:
   owner: platform-team
-  type: resource
+  type: template
 
   parameters:
     - title: Informações do Database
@@ -22,7 +22,7 @@ spec:
         databaseName:
           title: Nome do Database
           type: string
-          description: Nome do database PostgreSQL (use snake_case, ex. myapp_production)
+          description: Nome do database PostgreSQL (use snake_case)
           pattern: '^[a-z][a-z0-9_]*$'
           ui:autofocus: true
           ui:help: 'Use snake_case. Ex: myapp_production, app_staging'
@@ -30,7 +30,7 @@ spec:
         claimName:
           title: Nome do Claim
           type: string
-          description: Nome do recurso Kubernetes (use kebab-case, ex. myapp-production)
+          description: Nome do recurso Kubernetes (use kebab-case)
           pattern: '^[a-z][a-z0-9-]*$'
           ui:help: 'Use kebab-case. Ex: myapp-production, app-staging'
 
@@ -41,48 +41,29 @@ spec:
           type: integer
           description: Máximo de conexões simultâneas (-1 = ilimitado)
           default: -1
-          ui:help: 'Use -1 para ilimitado ou um número positivo para limitar'
-        
         allowConnections:
           title: Permitir Conexões
           type: boolean
-          description: Permite conexões ao database
           default: true
-          ui:help: 'Desabilite para manutenção'
-        
         deletionPolicy:
           title: Política de Deleção
           type: string
-          description: O que acontece ao deletar o claim
           default: Delete
           enum:
             - Delete
             - Orphan
-          enumNames:
-            - 'Delete - Remove database do PostgreSQL'
-            - 'Orphan - Mantém database no PostgreSQL (seguro)'
-          ui:help: 'Orphan é recomendado para produção'
-        
         environment:
           title: Ambiente
           type: string
-          description: Ambiente do database
           default: development
           enum:
             - development
             - staging
             - production
-          enumNames:
-            - 'Development'
-            - 'Staging'
-            - 'Production'
-        
         providerConfigRef:
           title: Provider Config
           type: string
-          description: Nome do ProviderConfig do Crossplane
           default: poc-postgres-aurora
-          ui:help: 'Deixe o padrão se não souber'
 
   steps:
     - id: fetch-base
@@ -105,6 +86,20 @@ spec:
       input:
         message: 'Arquivos gerados para ${{ parameters.claimName }}'
 
+    - id: create-pr
+      name: Abrir PR no GitHub
+      action: github:pull-request
+      input:
+        repoUrl: https://github.com/spaschoalick/backstage
+        sourceBranch: backstage-database-${{ parameters.claimName }}
+        title: "Criar banco ${{ parameters.databaseName }}"
+        body: "PR gerado automaticamente pelo template Backstage para criar o banco ${{ parameters.databaseName }}"
+        commitMessage: "Adicionar banco ${{ parameters.databaseName }}"
+        files:
+          - path: database.yaml
+        authorName: Backstage Bot
+        authorEmail: backstage-bot@example.com
+
   output:
     links:
       - title: Arquivo YAML gerado
@@ -120,35 +115,29 @@ spec:
           **Ambiente:** `${{ parameters.environment }}`
           **Política de Deleção:** `${{ parameters.deletionPolicy }}`
           
-          ### Como aplicar:
+          ### Como aplicar localmente:
           
           ```bash
           kubectl apply -f database.yaml
           ```
           
-          ### Verificar status:
+          ### Ver status do resource:
           
           ```bash
           kubectl get dakipostgresdatabases ${{ parameters.claimName }}
           kubectl describe dakipostgresdatabase ${{ parameters.claimName }}
           ```
           
-          ### Ver database no PostgreSQL:
-          
-          ```bash
-          kubectl get databases.postgresql.postgresql.upbound.io
-          ```
-          
-          ### Deletar (quando necessário):
+          ### Deletar quando necessário:
           
           ```bash
           kubectl delete dakipostgresdatabase ${{ parameters.claimName }}
           ```
           
           {% if parameters.deletionPolicy == "Orphan" %}
-          ⚠️ **Atenção:** Você escolheu `deletionPolicy: Orphan`. O database permanecerá no PostgreSQL mesmo após deletar o claim.
+          ⚠️ Atenção: Você escolheu `deletionPolicy: Orphan`. O database permanecerá no PostgreSQL mesmo após deletar o claim.
           {% endif %}
           
           {% if parameters.environment == "production" %}
-          🔒 **Produção:** Recomendamos usar `deletionPolicy: Orphan` e `connectionLimit` apropriado.
+          🔒 Produção: recomendamos usar `deletionPolicy: Orphan` e `connectionLimit` apropriado.
           {% endif %}
