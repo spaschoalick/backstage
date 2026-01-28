@@ -3,12 +3,11 @@ kind: Template
 metadata:
   name: daki-postgres-database
   title: Daki PostgreSQL Database
-  description: Cria um database PostgreSQL usando Crossplane e abre um PR no GitHub
+  description: Cria um database PostgreSQL usando Crossplane e abre PR no GitHub
   tags:
     - crossplane
     - postgresql
     - database
-    - daki
 spec:
   owner: platform-team
   type: template
@@ -82,13 +81,6 @@ spec:
       input:
         message: "Arquivos gerados para ${{ parameters.claimName }}"
 
-    - id: copy-file
-      name: Copiar YAML para a pasta databases
-      action: fs:copy
-      input:
-        from: ${{ steps.fetch-base.output.targetPath }}/database.yaml
-        to: databases/${{ parameters.claimName }}.yaml
-
     - id: create-pr
       name: Abrir PR no GitHub
       action: github:pull-request
@@ -99,7 +91,7 @@ spec:
         body: "PR gerado automaticamente pelo template Backstage para criar o banco ${{ parameters.databaseName }}"
         commitMessage: "Adicionar banco ${{ parameters.databaseName }}"
         files:
-          - path: databases/${{ parameters.claimName }}.yaml
+          - path: ${{ steps.fetch-base.output.targetPath }}/database.yaml
         authorName: Backstage Bot
         authorEmail: backstage-bot@example.com
 
@@ -107,7 +99,7 @@ spec:
     links:
       - title: Arquivo YAML gerado
         icon: description
-        url: databases/${{ parameters.claimName }}.yaml
+        url: ${{ steps.fetch-base.output.targetPath }}/database.yaml
     text:
       - title: Próximos passos
         content: |
@@ -120,7 +112,7 @@ spec:
           
           ### Como aplicar localmente:
           ```bash
-          kubectl apply -f databases/${{ parameters.claimName }}.yaml
+          kubectl apply -f ${{ steps.fetch-base.output.targetPath }}/database.yaml
           ```
           
           ### Ver status do resource:
