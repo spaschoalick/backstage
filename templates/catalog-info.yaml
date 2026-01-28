@@ -2,7 +2,7 @@ apiVersion: backstage.io/v1alpha1
 kind: Location
 metadata:
   name: daki-postgres-templates
-  description: Templates de PostgreSQL com Crossplane
+  description: Templates de PostgreSQL
 spec:
   type: file
   targets:
