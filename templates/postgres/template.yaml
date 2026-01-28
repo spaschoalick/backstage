@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: daki-postgres-database
   title: Daki PostgreSQL Database
-  description: Cria um database PostgreSQL usando Crossplane e abre um PR
+  description: Cria um database PostgreSQL usando Crossplane e abre um PR no GitHub
   tags:
     - crossplane
     - postgresql
@@ -25,21 +25,17 @@ spec:
           description: Nome do database PostgreSQL (use snake_case)
           pattern: '^[a-z][a-z0-9_]*$'
           ui:autofocus: true
-          ui:help: 'Use snake_case. Ex: myapp_production, app_staging'
-        
         claimName:
           title: Nome do Claim
           type: string
           description: Nome do recurso Kubernetes (use kebab-case)
           pattern: '^[a-z][a-z0-9-]*$'
-          ui:help: 'Use kebab-case. Ex: myapp-production, app-staging'
 
     - title: Configurações Avançadas
       properties:
         connectionLimit:
           title: Limite de Conexões
           type: integer
-          description: Máximo de conexões simultâneas (-1 = ilimitado)
           default: -1
         allowConnections:
           title: Permitir Conexões
@@ -84,7 +80,14 @@ spec:
       name: Log dos arquivos gerados
       action: debug:log
       input:
-        message: 'Arquivos gerados para ${{ parameters.claimName }}'
+        message: "Arquivos gerados para ${{ parameters.claimName }}"
+
+    - id: copy-file
+      name: Copiar YAML para a pasta databases
+      action: fs:copy
+      input:
+        from: ${{ steps.fetch-base.output.targetPath }}/database.yaml
+        to: databases/${{ parameters.claimName }}.yaml
 
     - id: create-pr
       name: Abrir PR no GitHub
@@ -96,7 +99,7 @@ spec:
         body: "PR gerado automaticamente pelo template Backstage para criar o banco ${{ parameters.databaseName }}"
         commitMessage: "Adicionar banco ${{ parameters.databaseName }}"
         files:
-          - path: database.yaml
+          - path: databases/${{ parameters.claimName }}.yaml
         authorName: Backstage Bot
         authorEmail: backstage-bot@example.com
 
@@ -104,7 +107,7 @@ spec:
     links:
       - title: Arquivo YAML gerado
         icon: description
-        url: ${{ steps['fetch-base'].output.targetPath }}/database.yaml
+        url: databases/${{ parameters.claimName }}.yaml
     text:
       - title: Próximos passos
         content: |
@@ -116,28 +119,17 @@ spec:
           **Política de Deleção:** `${{ parameters.deletionPolicy }}`
           
           ### Como aplicar localmente:
-          
           ```bash
-          kubectl apply -f database.yaml
+          kubectl apply -f databases/${{ parameters.claimName }}.yaml
           ```
           
           ### Ver status do resource:
-          
           ```bash
           kubectl get dakipostgresdatabases ${{ parameters.claimName }}
           kubectl describe dakipostgresdatabase ${{ parameters.claimName }}
           ```
           
           ### Deletar quando necessário:
-          
           ```bash
           kubectl delete dakipostgresdatabase ${{ parameters.claimName }}
           ```
-          
-          {% if parameters.deletionPolicy == "Orphan" %}
-          ⚠️ Atenção: Você escolheu `deletionPolicy: Orphan`. O database permanecerá no PostgreSQL mesmo após deletar o claim.
-          {% endif %}
-          
-          {% if parameters.environment == "production" %}
-          🔒 Produção: recomendamos usar `deletionPolicy: Orphan` e `connectionLimit` apropriado.
-          {% endif %}
