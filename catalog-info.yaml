@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Template
+metadata:
+  name: postgres-database
+  title: "Postgres Database"
+  description: "Template para criar um banco Postgres"
+  tags:
+    - database
+    - postgres
+spec:
+  type: template
+  owner: team/backend
+  path: ./templates/postgres/template.yaml
