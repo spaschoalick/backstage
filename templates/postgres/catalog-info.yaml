@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: daki-postgres-templates
+  description: Templates de PostgreSQL com Crossplane
+spec:
+  type: file
+  targets:
+    - ./postgres/template.yaml
