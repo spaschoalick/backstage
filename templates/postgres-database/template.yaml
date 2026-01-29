@@ -3,11 +3,12 @@ kind: Template
 metadata:
   name: daki-postgres-database
   title: PostgreSQL Database (Crossplane)
-  description: Cria um database PostgreSQL via Crossplane usando um Claim
+  description: Cria um database PostgreSQL via Crossplane usando um Claim e registra no catálogo
   tags:
     - database
     - postgres
     - crossplane
+
 spec:
   owner: platform
   type: database
@@ -28,17 +29,17 @@ spec:
             Exemplo: billing-db
 
   steps:
-    # 1. Busca o próprio repositório
+    # 1. Clona o repositório onde ficam os recursos
     - id: fetch-repo
       name: Fetch repository
       action: fetch:plain
       input:
-        targetPath: .
         url: https://github.com/ORG/backstage-resources
+        targetPath: .
 
-    # 2. Gera os manifests (claim + component)
+    # 2. Gera claim.yaml + catalog-info.yaml
     - id: generate
-      name: Generate database resources
+      name: Generate database manifests
       action: fetch:template
       input:
         url: ./templates/postgres-database/skeleton
@@ -46,7 +47,7 @@ spec:
         values:
           databaseName: ${{ parameters.databaseName }}
 
-    # 3. Publica as alterações
+    # 3. Commit no repositório
     - id: publish
       name: Commit database resources
       action: publish:github
@@ -57,6 +58,14 @@ spec:
           Create postgres database '${{ parameters.databaseName }}'
         gitAuthorName: Backstage
         gitAuthorEmail: backstage@company.com
+
+    # 4. Registra automaticamente no catálogo
+    - id: register
+      name: Register database in catalog
+      action: catalog:register
+      input:
+        repoContentsUrl: https://github.com/ORG/backstage-resources/blob/main
+        catalogInfoPath: databases/${{ parameters.databaseName }}/catalog-info.yaml
 
   output:
     links:
