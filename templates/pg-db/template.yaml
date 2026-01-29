@@ -41,19 +41,13 @@ spec:
     - id: publish
       action: publish:github:pull-request
       input:
-        # Tente usar este formato simplificado de repoUrl
+        # Formato explícito para evitar erro de resolução de owner
         repoUrl: "github.com?owner=spaschoalick&repo=backstage"
-        
-        # IMPORTANTE: Verifique se sua branch no GitHub é 'main' ou 'master'
         branchName: main
-        
-        # Garanta que o nome da branch de destino seja sempre único para cada execução
-        targetBranchName: infra-db-${{ parameters.db_name }}-${{ uuid() }}
-        
+        # Usando um sufixo fixo de teste para garantir criação da branch
+        targetBranchName: "aki-db-provision-${{ parameters.db_name }}"
         title: "infra: provisionar banco ${{ parameters.db_name }}"
-        description: "PR gerado pelo Backstage Scaffolder."
-        
-        # Caminho onde o arquivo será inserido
+        description: "PR gerado via Backstage Scaffolder."
         targetPath: "database/instances/${{ parameters.db_name }}"
 
   output:
