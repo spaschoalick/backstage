@@ -1,28 +1,35 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: teste-definitivo
-  title: Teste de Gravacao Direta
+  name: create-daki-postgres
+  title: Novo Banco PostgreSQL (Ajuste Final)
 spec:
   owner: guest
   type: service
   parameters:
-    - title: Nome
+    - title: Dados
+      required: [db_name]
       properties:
         db_name:
+          title: Nome do Banco
           type: string
-          default: teste-conexao
   steps:
     - id: fetch
-      action: fetch:plain
+      action: fetch:template
       input:
-        url: https://github.com/spaschoalick/backstage/blob/main/README.md
+        url: ./content
+        templateFileExtension: true
+        values:
+          db_name: ${{ parameters.db_name }}
 
     - id: publish
       action: publish:github:pull-request
       input:
-        repoUrl: github.com?owner=spaschoalick&repo=backstage
+        # Mudança aqui: invertendo owner e repo e garantindo branchName
+        repoUrl: "github.com?owner=spaschoalick&repo=backstage"
         branchName: main
-        targetBranchName: teste-agora-vai
-        title: "Teste de Escrita"
-        description: "Apenas um teste"
+        # Garante que a branch de destino seja única para não dar conflito
+        targetBranchName: "infra-db-${{ parameters.db_name }}"
+        title: "infra: banco ${{ parameters.db_name }}"
+        description: "PR gerado via Backstage"
+        targetPath: "database/instances/${{ parameters.db_name }}"
