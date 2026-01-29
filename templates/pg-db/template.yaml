@@ -3,7 +3,6 @@ kind: Template
 metadata:
   name: create-daki-postgres
   title: Novo Banco PostgreSQL (Crossplane)
-  description: Abre um PR para provisionar um banco.
 spec:
   owner: guest
   type: service
@@ -28,8 +27,9 @@ spec:
     - id: publish
       action: publish:github:pull-request
       input:
-        # Tente usar a URL no formato "owner/repo" se o formato query string falhar
-        repoUrl: "github.com?repo=backstage&owner=spaschoalick"
+        # Formato que o Scaffolder usa internamente para mapear a integração
+        # Se o formato com query string falhou, este é o fallback oficial:
+        repoUrl: "github.com?owner=spaschoalick&repo=backstage"
         branchName: main
         targetBranchName: "infra-db-${{ parameters.db_name }}"
         title: "infra: novo banco ${{ parameters.db_name }}"
