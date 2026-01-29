@@ -40,11 +40,15 @@ spec:
           deletion_policy: ${{ parameters.deletion_policy }}
 
     - id: publish
-      action: publish:github
+      # Mudamos para publish:github:write que é focada em repositórios existentes
+      action: publish:github:write
       input:
-        # Colocamos branch e targetPath direto na URL para evitar o erro de 'additional property'
-        repoUrl: "github.com?owner=spaschoalick&repo=backstage&branch=main&targetPath=database/instances/${{ parameters.db_name }}"
-        description: "infra: provisionar banco ${{ parameters.db_name }} via Crossplane"
+        repoUrl: "github.com?owner=spaschoalick&repo=backstage"
+        branchName: main
+        # Define onde o conteúdo do fetch-base será injetado
+        targetPath: "database/instances/${{ parameters.db_name }}"
+        title: "infra: novo banco ${{ parameters.db_name }}"
+        description: "Provisionamento via Crossplane"
 
   output:
     links:
