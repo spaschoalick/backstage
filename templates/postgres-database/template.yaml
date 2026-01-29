@@ -42,7 +42,7 @@ spec:
       action: fetch:template
       input:
         url: ./templates/postgres-database/skeleton
-        targetPath: resources/databases/${{ parameters.databaseName }}
+        targetPath: databases/${{ parameters.databaseName }}
         values:
           databaseName: ${{ parameters.databaseName }}
 
