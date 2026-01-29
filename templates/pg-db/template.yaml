@@ -2,43 +2,30 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: create-daki-postgres
-  title: Novo Banco PostgreSQL (Versao Estavel)
-  description: Esta versao usa o formato simplificado que sempre funciona.
+  title: Novo Banco PostgreSQL (Simples)
 spec:
   owner: guest
   type: service
-
   parameters:
-    - title: Dados do Banco
+    - title: Dados
       required: [db_name]
       properties:
         db_name:
           title: Nome do Banco
           type: string
-
   steps:
     - id: fetch
       action: fetch:template
       input:
         url: ./content
-        # Garantindo que ele processe as chaves {{ }}
         templateFileExtension: true
         values:
           db_name: ${{ parameters.db_name }}
-
     - id: publish
       action: publish:github:pull-request
       input:
-        # Formato de URL mais estável do Backstage
         repoUrl: "github.com?owner=spaschoalick&repo=backstage"
-        branchName: main
-        # Usando um nome fixo + variavel para garantir que abra
-        targetBranchName: "patch-${{ parameters.db_name }}"
-        title: "infra: adicionar banco ${{ parameters.db_name }}"
-        description: "PR gerado pelo Scaffolder do Backstage"
-        targetPath: "database/instances/${{ parameters.db_name }}"
-
-  output:
-    links:
-      - title: Ver Pull Request no GitHub
-        url: ${{ steps['publish'].output.remoteUrl }}
+        branchName: main # <--- SE O CURL DEU ERRO NA MAIN, TROQUE PARA MASTER
+        targetBranchName: "infra-${{ parameters.db_name }}-${{ 'now' | date('HHmm') }}"
+        title: "PR: ${{ parameters.db_name }}"
+        description: "Criado via Backstage"
