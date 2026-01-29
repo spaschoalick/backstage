@@ -6,13 +6,15 @@ metadata:
 spec:
   owner: guest
   type: service
+
   parameters:
-    - title: Dados
+    - title: Configuracoes Basicas
       required: [db_name]
       properties:
         db_name:
           title: Nome do Banco
           type: string
+
   steps:
     - id: fetch
       action: fetch:template
@@ -21,11 +23,20 @@ spec:
         templateFileExtension: true
         values:
           db_name: ${{ parameters.db_name }}
+
     - id: publish
       action: publish:github:pull-request
       input:
-        repoUrl: "github.com?owner=spaschoalick&repo=backstage"
-        branchName: main # <--- SE O CURL DEU ERRO NA MAIN, TROQUE PARA MASTER
-        targetBranchName: "infra-${{ parameters.db_name }}-${{ 'now' | date('HHmm') }}"
-        title: "PR: ${{ parameters.db_name }}"
-        description: "Criado via Backstage"
+        # Formato limpo
+        repoUrl: github.com?owner=spaschoalick&repo=backstage
+        branchName: main
+        # Adicionando data e hora para garantir que nunca dê conflito
+        targetBranchName: infra-${{ parameters.db_name }}-${{ 'now' | date('HHmm') }}
+        title: "infra: novo banco ${{ parameters.db_name }}"
+        description: "PR gerado via Backstage"
+        targetPath: database/instances/${{ parameters.db_name }}
+
+  output:
+    links:
+      - title: Ver Pull Request no GitHub
+        url: ${{ steps['publish'].output.remoteUrl }}
