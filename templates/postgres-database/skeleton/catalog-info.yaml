@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: postgres-db-{{ databaseName }}
+  title: PostgreSQL Database {{ databaseName }}
+  description: Database PostgreSQL provisionado via Crossplane
+  tags:
+    - database
+    - postgres
+    - crossplane
+spec:
+  type: database
+  lifecycle: production
+  owner: platform
