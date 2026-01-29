@@ -1,6 +1,8 @@
 apiVersion: backstage.io/v1alpha1
-kind: System
+kind: Component
 metadata:
-  name: databases
+  name: postgres-database
 spec:
+  type: database
+  lifecycle: experimental
   owner: teste
