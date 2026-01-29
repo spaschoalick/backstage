@@ -42,12 +42,9 @@ spec:
     - id: publish
       action: publish:github
       input:
-        repoUrl: "github.com?owner=spaschoalick&repo=backstage"
-        branchName: main
-        # O targetPath define onde os arquivos do ./content serão salvos no repo
-        targetPath: "database/instances/${{ parameters.db_name }}"
-        title: "infra: provisionar banco ${{ parameters.db_name }}"
-        description: "Banco de dados criado via Backstage para processamento pelo Crossplane."
+        # Colocamos branch e targetPath direto na URL para evitar o erro de 'additional property'
+        repoUrl: "github.com?owner=spaschoalick&repo=backstage&branch=main&targetPath=database/instances/${{ parameters.db_name }}"
+        description: "infra: provisionar banco ${{ parameters.db_name }} via Crossplane"
 
   output:
     links:
