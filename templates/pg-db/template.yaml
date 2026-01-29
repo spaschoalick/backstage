@@ -22,7 +22,6 @@ spec:
           title: Limite de Conexões
           type: integer
           default: -1
-          description: Use -1 para ilimitado.
         deletion_policy:
           title: Política de Deleção
           type: string
@@ -42,20 +41,19 @@ spec:
     - id: publish
       action: publish:github:pull-request
       input:
-        # Repositório onde o PR será aberto
+        # Tente usar este formato simplificado de repoUrl
         repoUrl: "github.com?owner=spaschoalick&repo=backstage"
         
-        # Branch de destino (onde o código vai entrar após o merge)
+        # IMPORTANTE: Verifique se sua branch no GitHub é 'main' ou 'master'
         branchName: main
         
-        # Nome da nova branch que o Backstage vai criar
-        targetBranchName: infra-db-${{ parameters.db_name }}
+        # Garanta que o nome da branch de destino seja sempre único para cada execução
+        targetBranchName: infra-db-${{ parameters.db_name }}-${{ uuid() }}
         
-        # Título e descrição do PR
         title: "infra: provisionar banco ${{ parameters.db_name }}"
-        description: "Este PR foi gerado automaticamente pelo Backstage para provisionar um banco via Crossplane."
+        description: "PR gerado pelo Backstage Scaffolder."
         
-        # Onde os arquivos do ./content serão salvos dentro do repo
+        # Caminho onde o arquivo será inserido
         targetPath: "database/instances/${{ parameters.db_name }}"
 
   output:
