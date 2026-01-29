@@ -3,20 +3,17 @@ kind: Template
 metadata:
   name: create-daki-postgres
   title: Novo Banco PostgreSQL (Crossplane)
-  description: Abre um PR no repositório de infraestrutura da Daki.
 spec:
   owner: guest
   type: service
 
   parameters:
-    - title: Configurações do Banco
-      required:
-        - db_name
+    - title: Configurações
+      required: [db_name]
       properties:
         db_name:
           title: Nome do Banco
           type: string
-          description: Nome único para o recurso.
 
   steps:
     - id: fetch
@@ -29,16 +26,15 @@ spec:
     - id: publish
       action: publish:github:pull-request
       input:
-        # Mudança fundamental: Formato posicional host?repo=X&owner=Y
-        # Evita que o Backstage se perca tentando parsear a URL
+        # Mudança: Usando a URL completa do projeto para forçar o reconhecimento
         repoUrl: "github.com?repo=backstage&owner=spaschoalick"
         branchName: main
         targetBranchName: "infra-db-${{ parameters.db_name }}"
-        title: "infra: provisionar banco ${{ parameters.db_name }}"
-        description: "PR gerado automaticamente via Backstage Scaffolder."
+        title: "infra: novo banco ${{ parameters.db_name }}"
+        description: "PR gerado via Backstage."
         targetPath: "database/instances/${{ parameters.db_name }}"
 
   output:
     links:
-      - title: Ver Pull Request no GitHub
+      - title: Ver Pull Request
         url: ${{ steps['publish'].output.remoteUrl }}
