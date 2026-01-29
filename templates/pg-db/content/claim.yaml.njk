@@ -1,10 +1,10 @@
 apiVersion: daki.database.example.com/v1alpha1
 kind: DakiPostgresDatabase
 metadata:
-  name: {{ db_name }}
+  name: ${{ db_name }}
 spec:
   parameters:
-    databaseName: {{ db_name }}
+    databaseName: ${{ db_name }}
     connectionLimit: 100
     allowConnections: true
     deletionPolicy: Delete
