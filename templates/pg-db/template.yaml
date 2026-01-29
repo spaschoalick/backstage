@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: create-daki-postgres
   title: Novo Banco PostgreSQL (Crossplane)
-  description: Provisiona um banco de dados via Crossplane Composition na Daki.
+  description: Abre um PR com o manifesto do Crossplane para provisionar um banco.
 spec:
   owner: guest
   type: service
@@ -40,16 +40,25 @@ spec:
           deletion_policy: ${{ parameters.deletion_policy }}
 
     - id: publish
-      action: publish:github
+      action: publish:github:pull-request
       input:
-        # Passamos TUDO na query string para evitar o erro de 'additional property'
-        # branch: main
-        # targetPath: o caminho onde o arquivo será salvo
-        # repo e owner: seu repositório
-        repoUrl: "github.com?owner=spaschoalick&repo=backstage&branch=main&targetPath=database/instances/${{ parameters.db_name }}"
-        description: "infra: provisionar banco ${{ parameters.db_name }} via Crossplane"
+        # Repositório onde o PR será aberto
+        repoUrl: "github.com?owner=spaschoalick&repo=backstage"
+        
+        # Branch de destino (onde o código vai entrar após o merge)
+        branchName: main
+        
+        # Nome da nova branch que o Backstage vai criar
+        targetBranchName: infra-db-${{ parameters.db_name }}
+        
+        # Título e descrição do PR
+        title: "infra: provisionar banco ${{ parameters.db_name }}"
+        description: "Este PR foi gerado automaticamente pelo Backstage para provisionar um banco via Crossplane."
+        
+        # Onde os arquivos do ./content serão salvos dentro do repo
+        targetPath: "database/instances/${{ parameters.db_name }}"
 
   output:
     links:
-      - title: Ver no GitHub
+      - title: Ver Pull Request no GitHub
         url: ${{ steps['publish'].output.remoteUrl }}
