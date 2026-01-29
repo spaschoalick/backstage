@@ -42,14 +42,12 @@ spec:
     - id: publish
       action: publish:github
       input:
-        # Usamos apenas owner e repo. 
-        # Importante: A branch e o targetPath vão como propriedades separadas se o seu backend for mais antigo,
-        # ou na query string se for mais novo. Vamos tentar o formato mais aceito:
-        repoUrl: "github.com?owner=spaschoalick&repo=backstage"
-        branchName: main
-        targetPath: "database/instances/${{ parameters.db_name }}"
-        title: "infra: novo banco ${{ parameters.db_name }}"
-        description: "Commit via Backstage Scaffolder"
+        # Passamos TUDO na query string para evitar o erro de 'additional property'
+        # branch: main
+        # targetPath: o caminho onde o arquivo será salvo
+        # repo e owner: seu repositório
+        repoUrl: "github.com?owner=spaschoalick&repo=backstage&branch=main&targetPath=database/instances/${{ parameters.db_name }}"
+        description: "infra: provisionar banco ${{ parameters.db_name }} via Crossplane"
 
   output:
     links:
