@@ -3,18 +3,20 @@ kind: Template
 metadata:
   name: create-daki-postgres
   title: Novo Banco PostgreSQL (Crossplane)
-  description: Abre um PR para provisionar um banco via Crossplane.
+  description: Abre um PR no repositório backstage para provisionamento.
 spec:
   owner: guest
   type: service
 
   parameters:
-    - title: Configurações
-      required: [db_name]
+    - title: Configurações do Banco
+      required:
+        - db_name
       properties:
         db_name:
           title: Nome do Recurso
           type: string
+          description: Nome do banco/claim.
 
   steps:
     - id: fetch
@@ -27,13 +29,13 @@ spec:
     - id: publish
       action: publish:github:pull-request
       input:
-        # Formato query string - Único que garante o uso da integração 'github.com'
+        # Formato com query string é o que o Backstage usa para casar com o 'host' no app-config.yaml
         repoUrl: "github.com?owner=spaschoalick&repo=backstage"
         branchName: main
-        # Forçamos um nome de branch único para evitar conflitos de PRs anteriores
-        targetBranchName: "infra-db-request-${{ parameters.db_name }}"
-        title: "infra: novo banco ${{ parameters.db_name }}"
-        description: "Solicitação de banco via Backstage."
+        # targetBranchName deve ser único. Usar o db_name ajuda.
+        targetBranchName: "infra-db-${{ parameters.db_name }}"
+        title: "infra: provisionar banco ${{ parameters.db_name }}"
+        description: "Solicitação gerada via Backstage Scaffolder."
         targetPath: "database/instances/${{ parameters.db_name }}"
 
   output:
