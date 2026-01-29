@@ -2,39 +2,52 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: create-daki-postgres
-  title: Provisionar Banco PostgreSQL
-  description: Cria um claim do Crossplane para banco de dados
+  title: Novo Banco PostgreSQL (Crossplane)
+  description: Provisiona um banco de dados via Crossplane Composition na Daki.
 spec:
   owner: guest
   type: service
+
   parameters:
-    - title: Dados do Banco
+    - title: Configurações do Banco
+      required:
+        - db_name
       properties:
         db_name:
-          title: Nome do Banco
+          title: Nome do Recurso
           type: string
+          description: Nome único para o Kubernetes e para o banco.
+          ui:autofocus: true
         conn_limit:
           title: Limite de Conexões
           type: integer
           default: -1
+          description: Use -1 para ilimitado.
+        deletion_policy:
+          title: Política de Deleção
+          type: string
+          enum: [Delete, Orphan]
+          default: Delete
 
   steps:
-    - id: fetch
+    - id: fetch-base
       action: fetch:template
       input:
         url: ./content
         values:
           db_name: ${{ parameters.db_name }}
           conn_limit: ${{ parameters.conn_limit }}
+          deletion_policy: ${{ parameters.deletion_policy }}
 
     - id: publish
       action: publish:github
       input:
-        allowedHosts: ['github.com']
         repoUrl: "github.com?owner=spaschoalick&repo=backstage"
         branchName: main
-        # O SEGREDO AQUI: Usar um caminho único evita o erro de SHA
-        targetPath: database/instances/${{ parameters.db_name }} 
+        # O targetPath define onde os arquivos do ./content serão salvos no repo
+        targetPath: "database/instances/${{ parameters.db_name }}"
+        title: "infra: provisionar banco ${{ parameters.db_name }}"
+        description: "Banco de dados criado via Backstage para processamento pelo Crossplane."
 
   output:
     links:
