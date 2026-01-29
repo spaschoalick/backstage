@@ -5,5 +5,4 @@ metadata:
 spec:
   type: github
   targets:
-    - https://github.com/spaschoalick/backstage/blob/main/catalog-info.yaml
     - https://github.com/spaschoalick/backstage/blob/main/databases/catalog-info.yaml
