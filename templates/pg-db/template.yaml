@@ -2,7 +2,7 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: create-daki-postgres
-  title: Novo Banco PostgreSQL (Push Direto)
+  title: Novo Banco PostgreSQL
 spec:
   owner: guest
   type: service
@@ -23,10 +23,18 @@ spec:
           db_name: ${{ parameters.db_name }}
 
     - id: publish
-      # Mudei de pull-request para github comum para forçar a criação da branch
-      action: publish:github
+      action: publish:github:pull-request
       input:
+        # O segredo está aqui: GARANTA que o owner e o repo estão idênticos ao GitHub
         repoUrl: "github.com?owner=spaschoalick&repo=backstage"
-        # Isso vai criar a branch diretamente no repo
-        defaultBranch: main
-        repoVisibility: public # ou private, conforme seu repo
+        branchName: main
+        # Use um nome de branch que você ainda não usou hoje
+        targetBranchName: "infra-db-final-${{ parameters.db_name }}"
+        title: "infra: banco ${{ parameters.db_name }}"
+        description: "PR gerado pelo Backstage"
+        targetPath: "database/instances/${{ parameters.db_name }}"
+
+  output:
+    links:
+      - title: Ver Pull Request no GitHub
+        url: ${{ steps['publish'].output.remoteUrl }}
