@@ -3,6 +3,7 @@ kind: Template
 metadata:
   name: create-daki-postgres
   title: Novo Banco PostgreSQL (Crossplane)
+  description: Abre um PR para provisionar um banco.
 spec:
   owner: guest
   type: service
@@ -27,11 +28,11 @@ spec:
     - id: publish
       action: publish:github:pull-request
       input:
-        # Formato que o Scaffolder usa internamente para mapear a integração
-        # Se o formato com query string falhou, este é o fallback oficial:
+        # Formato oficial e único que garante que o Backstage use a integração 'github.com'
         repoUrl: "github.com?owner=spaschoalick&repo=backstage"
         branchName: main
-        targetBranchName: "infra-db-${{ parameters.db_name }}"
+        # Forçando um nome de branch fixo para o teste
+        targetBranchName: "infra-db-test-branch"
         title: "infra: novo banco ${{ parameters.db_name }}"
         description: "PR gerado via Backstage para Crossplane."
         targetPath: "database/instances/${{ parameters.db_name }}"
