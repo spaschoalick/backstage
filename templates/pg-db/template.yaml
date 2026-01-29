@@ -1,0 +1,42 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: create-daki-postgres
+  title: Provisionar Banco PostgreSQL
+  description: Cria um claim do Crossplane para banco de dados
+spec:
+  owner: guest
+  type: service
+  parameters:
+    - title: Dados do Banco
+      properties:
+        db_name:
+          title: Nome do Banco
+          type: string
+        conn_limit:
+          title: Limite de Conexões
+          type: integer
+          default: -1
+
+  steps:
+    - id: fetch
+      action: fetch:template
+      input:
+        url: ./content
+        values:
+          db_name: ${{ parameters.db_name }}
+          conn_limit: ${{ parameters.conn_limit }}
+
+    - id: publish
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        repoUrl: "github.com?owner=spaschoalick&repo=backstage"
+        branchName: main
+        # O SEGREDO AQUI: Usar um caminho único evita o erro de SHA
+        targetPath: database/instances/${{ parameters.db_name }} 
+
+  output:
+    links:
+      - title: Ver no GitHub
+        url: ${{ steps['publish'].output.remoteUrl }}
