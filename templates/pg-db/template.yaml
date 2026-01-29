@@ -2,12 +2,12 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: create-daki-postgres
-  title: Novo Banco PostgreSQL (Estático)
+  title: Novo Banco PostgreSQL
 spec:
   owner: guest
   type: service
   parameters:
-    - title: Configuração do Banco
+    - title: Configuração
       required: [db_name]
       properties:
         db_name:
@@ -18,7 +18,6 @@ spec:
       action: fetch:template
       input:
         url: ./content
-        # Isso garante que o {{ db_name }} no arquivo seja trocado
         templateFileExtension: true
         values:
           db_name: ${{ parameters.db_name }}
@@ -26,15 +25,17 @@ spec:
     - id: publish
       action: publish:github:pull-request
       input:
-        repoUrl: "github.com?owner=spaschoalick&repo=backstage"
+        # Removi aspas desnecessárias e usei a query string direta
+        repoUrl: github.com?owner=spaschoalick&repo=backstage
+        # FORÇANDO A BASE: Se o erro é Not Found no list-commits, 
+        # certifique-se que no seu GitHub a branch se chama 'main'
         branchName: main
-        # Usando um prefixo simples para evitar erro de branch duplicada
-        targetBranchName: "banco-${{ parameters.db_name }}"
-        title: "infra: novo banco ${{ parameters.db_name }}"
-        description: "PR gerado automaticamente"
-        targetPath: "database/instances/${{ parameters.db_name }}"
+        targetBranchName: dev-banco-${{ parameters.db_name }}
+        title: "infra: ${{ parameters.db_name }}"
+        description: "PR estático via Backstage"
+        targetPath: database/instances/${{ parameters.db_name }}
 
   output:
     links:
-      - title: Ver Pull Request no GitHub
+      - title: Ver Pull Request
         url: ${{ steps['publish'].output.remoteUrl }}
