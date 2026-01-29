@@ -1,0 +1,62 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: create-daki-postgres
+  title: Novo Banco PostgreSQL (Crossplane)
+  description: Provisiona um banco de dados via Crossplane Composition na Daki.
+spec:
+  owner: group:infra-team
+  type: service
+
+  # O que o usuário vai preencher no Backstage
+  parameters:
+    - title: Configurações do Banco
+      required:
+        - name
+        - databaseName
+      properties:
+        name:
+          title: Nome do Recurso (Metadata Name)
+          type: string
+          description: Nome único do recurso no Kubernetes.
+          ui:autofocus: true
+        databaseName:
+          title: Nome do Database
+          type: string
+          description: O nome real do banco de dados que será criado.
+        connectionLimit:
+          title: Limite de Conexões
+          type: integer
+          default: -1
+        deletionPolicy:
+          title: Política de Deleção
+          type: string
+          enum: [Delete, Orphan]
+          default: Delete
+
+  # Ações que o Backstage vai executar
+  steps:
+    - id: fetch-base
+      action: fetch:template
+      input:
+        url: ./content # Onde vai estar o arquivo de template
+        values:
+          name: ${{ parameters.name }}
+          databaseName: ${{ parameters.databaseName }}
+          connectionLimit: ${{ parameters.connectionLimit }}
+          deletionPolicy: ${{ parameters.deletionPolicy }}
+
+    - id: publish
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: "Provisionando banco de dados: ${{ parameters.name }}"
+        repoUrl: "github.com?owner=spaschoalick&repo=backstage" # Altere para o seu repo de infra
+        branchName: main
+        # DICA: Para evitar o erro 422 (SHA), salve em um caminho único por banco
+        targetPath: database/instances/${{ parameters.name }}
+
+  output:
+    links:
+      - title: Ver no Repositório
+        url: ${{ steps['publish'].output.remoteUrl }}
