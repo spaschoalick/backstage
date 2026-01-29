@@ -18,13 +18,17 @@ spec:
           type: string
           description: Nome do banco/claim.
 
-  steps:
+steps:
     - id: fetch
       action: fetch:template
       input:
         url: ./content
+        # Isso força o Backstage a procurar arquivos .njk e renderizá-los
+        templateFileExtension: true
         values:
           db_name: ${{ parameters.db_name }}
+          conn_limit: ${{ parameters.conn_limit }}
+          deletion_policy: ${{ parameters.deletion_policy }}
 
     - id: publish
       action: publish:github:pull-request
