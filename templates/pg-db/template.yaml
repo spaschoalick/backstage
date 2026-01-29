@@ -23,14 +23,42 @@ spec:
         values:
           db_name: ${{ parameters.db_name }}
 
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: create-daki-postgres
+  title: Novo Banco PostgreSQL (Padrão Alternativo)
+spec:
+  owner: guest
+  type: service
+  parameters:
+    - title: Dados
+      required: [db_name]
+      properties:
+        db_name:
+          title: Nome do Banco
+          type: string
+
+  steps:
+    - id: fetch
+      action: fetch:template
+      input:
+        url: ./content
+        values:
+          db_name: ${{ parameters.db_name }}
+
+    # Este passo força o Backstage a processar o workspace antes de falar com o GitHub
     - id: publish
       action: publish:github:pull-request
       input:
-        # Padrão: injetar o nome da branch direto na query da repoUrl
-        repoUrl: "github.com?owner=spaschoalick&repo=backstage&branch=main"
-        targetBranchName: "infra-${{ parameters.db_name }}"
+        repoUrl: github.com?owner=spaschoalick&repo=backstage
+        branchName: main
+        # Forçando o targetBranch para uma string que o Octokit entenda melhor
+        targetBranchName: "infra-db-${{ parameters.db_name }}"
         title: "infra: banco ${{ parameters.db_name }}"
-        description: "Novo banco"
+        description: "PR gerado via Backstage"
+        # Deixe o targetPath vazio ou fixo para testar se ele para de bugar na URL
+        targetPath: database/instances
 
   output:
     links:
