@@ -24,12 +24,11 @@ spec:
           db_name: ${{ parameters.db_name }}
 
     - id: publish
-      action: publish:github:pull-request
+      action: publish:github
       input:
         repoUrl: "github.com?owner=spaschoalick&repo=backstage"
-        branchName: 'main'
-        targetBranchName: "infra-${{ parameters['db_name'] }}" # Padrão colchetes
-        title: "Novo banco ${{ parameters['db_name'] }}"
+        # Isso faz o push direto para uma branch nova sem abrir o PR
+        branchName: "infra-${{ parameters.db_name }}"
 
   output:
     links:
