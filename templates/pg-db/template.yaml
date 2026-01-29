@@ -3,11 +3,9 @@ kind: Template
 metadata:
   name: create-daki-postgres
   title: Novo Banco PostgreSQL (Crossplane)
-  description: Abre um PR com o manifesto do Crossplane para provisionar um banco.
 spec:
   owner: guest
   type: service
-
   parameters:
     - title: Configurações do Banco
       required:
@@ -16,40 +14,24 @@ spec:
         db_name:
           title: Nome do Recurso
           type: string
-          description: Nome único para o Kubernetes e para o banco.
-          ui:autofocus: true
-        conn_limit:
-          title: Limite de Conexões
-          type: integer
-          default: -1
-        deletion_policy:
-          title: Política de Deleção
-          type: string
-          enum: [Delete, Orphan]
-          default: Delete
-
   steps:
-    - id: fetch-base
+    - id: fetch
       action: fetch:template
       input:
         url: ./content
         values:
           db_name: ${{ parameters.db_name }}
-          conn_limit: ${{ parameters.conn_limit }}
-          deletion_policy: ${{ parameters.deletion_policy }}
-
     - id: publish
       action: publish:github:pull-request
       input:
-        # Formato explícito para evitar erro de resolução de owner
+        # Simplificando a URL ao máximo
         repoUrl: "github.com?owner=spaschoalick&repo=backstage"
         branchName: main
-        # Usando um sufixo fixo de teste para garantir criação da branch
-        targetBranchName: "aki-db-provision-${{ parameters.db_name }}"
-        title: "infra: provisionar banco ${{ parameters.db_name }}"
-        description: "PR gerado via Backstage Scaffolder."
+        # Nome da branch que o Backstage VAI CRIAR (não precisa existir antes)
+        targetBranchName: "infra-db-${{ parameters.db_name }}"
+        title: "infra: novo banco ${{ parameters.db_name }}"
+        description: "PR gerado via Backstage para Crossplane."
         targetPath: "database/instances/${{ parameters.db_name }}"
-
   output:
     links:
       - title: Ver Pull Request no GitHub
