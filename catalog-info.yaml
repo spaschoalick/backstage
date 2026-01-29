@@ -1,10 +1,9 @@
 apiVersion: backstage.io/v1alpha1
-kind: Component
+kind: Location
 metadata:
-  name: backstage
-  annotations:
-    github.com/project-slug: spaschoalick/backstage
+  name: root
 spec:
-  type: service
-  lifecycle: production
-  owner: teste
+  type: github
+  targets:
+    - https://github.com/spaschoalick/backstage/blob/main/catalog-info.yaml
+    - https://github.com/spaschoalick/backstage/blob/main/databases/catalog-info.yaml
