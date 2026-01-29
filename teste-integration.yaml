@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: integration-test-daki
+  annotations:
+    github.com/project-slug: spaschoalick/backstage
+spec:
+  type: other
+  lifecycle: experimental
+  owner: user:guest
