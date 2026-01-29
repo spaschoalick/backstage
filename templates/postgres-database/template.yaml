@@ -1,0 +1,66 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: daki-postgres-database
+  title: PostgreSQL Database (Crossplane)
+  description: Cria um database PostgreSQL via Crossplane usando um Claim
+  tags:
+    - database
+    - postgres
+    - crossplane
+spec:
+  owner: platform
+  type: database
+
+  parameters:
+    - title: Database
+      required:
+        - databaseName
+      properties:
+        databaseName:
+          title: Nome do database
+          type: string
+          description: Nome do database PostgreSQL
+          pattern: '^[a-z][a-z0-9-]{2,30}$'
+          ui:autofocus: true
+          ui:help: |
+            Use apenas letras minúsculas, números e hífen.
+            Exemplo: billing-db
+
+  steps:
+    # 1. Busca o próprio repositório
+    - id: fetch-repo
+      name: Fetch repository
+      action: fetch:plain
+      input:
+        targetPath: .
+        url: https://github.com/ORG/backstage-resources
+
+    # 2. Gera os manifests (claim + component)
+    - id: generate
+      name: Generate database resources
+      action: fetch:template
+      input:
+        url: ./templates/postgres-database/skeleton
+        targetPath: resources/databases/${{ parameters.databaseName }}
+        values:
+          databaseName: ${{ parameters.databaseName }}
+
+    # 3. Publica as alterações
+    - id: publish
+      name: Commit database resources
+      action: publish:github
+      input:
+        repoUrl: github.com/ORG/backstage-resources
+        branchName: main
+        commitMessage: |
+          Create postgres database '${{ parameters.databaseName }}'
+        gitAuthorName: Backstage
+        gitAuthorEmail: backstage@company.com
+
+  output:
+    links:
+      - title: Repository
+        url: https://github.com/ORG/backstage-resources
+      - title: Database component
+        entityRef: component:default/postgres-db-${{ parameters.databaseName }}
