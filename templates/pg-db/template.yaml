@@ -1,14 +1,13 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  # Voltando para o nome original para o Backstage não se perder
-  name: create-daki-postgres
-  title: Novo Banco PostgreSQL
+  name: create-daki-postgres-final
+  title: Novo Banco PostgreSQL (Reset)
 spec:
   owner: guest
   type: service
   parameters:
-    - title: Dados
+    - title: Configuracoes
       required: [db_name]
       properties:
         db_name:
@@ -26,15 +25,9 @@ spec:
     - id: publish
       action: publish:github:pull-request
       input:
-        repoUrl: github.com?owner=spaschoalick&repo=backstage
+        repoUrl: "github.com?owner=spaschoalick&repo=backstage"
         branchName: main
-        # Usando um nome de branch único para o PR
-        targetBranchName: branch-db-${{ parameters.db_name }}
+        targetBranchName: "infra-banco-${{ parameters.db_name }}"
         title: "infra: banco ${{ parameters.db_name }}"
         description: "PR gerado via Backstage"
-        targetPath: database/instances/${{ parameters.db_name }}
-
-  output:
-    links:
-      - title: Ver Pull Request no GitHub
-        url: ${{ steps['publish'].output.remoteUrl }}
+        targetPath: "database/instances/${{ parameters.db_name }}"
