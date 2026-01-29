@@ -2,7 +2,7 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: create-daki-postgres
-  title: Novo Banco PostgreSQL
+  title: Novo Banco PostgreSQL (Push)
 spec:
   owner: guest
   type: service
@@ -22,21 +22,17 @@ spec:
         values:
           db_name: ${{ parameters.db_name }}
 
-    # PASSO 1: Criar a branch e subir os arquivos direto
-    - id: publish-branch
-      action: publish:github
+    - id: publish
+      action: publish:github:push
       input:
         repoUrl: "github.com?owner=spaschoalick&repo=backstage"
+        # Aqui o parâmetro correto é branchName
         branchName: "infra-${{ parameters.db_name }}"
-        # Isso impede que ele tente criar um repositório novo
-        repoVisibility: public
+        commitMessage: "feat: adiciona instancia de banco ${{ parameters.db_name }}"
+        sourcePath: "." # Sobe tudo o que foi gerado no fetch
+        targetPath: "database/instances/${{ parameters.db_name }}"
 
-    # PASSO 2: Abrir o Pull Request da branch criada para a main
-    - id: create-pr
-      action: publish:github:pull-request
-      input:
-        repoUrl: "github.com?owner=spaschoalick&repo=backstage"
-        branchName: main
-        targetBranchName: "infra-${{ parameters.db_name }}"
-        title: "infra: banco ${{ parameters.db_name }}"
-        description: "Novo banco postgres"
+  output:
+    links:
+      - title: Ver código no GitHub
+        url: "https://github.com/spaschoalick/backstage/tree/infra-${{ parameters.db_name }}"
