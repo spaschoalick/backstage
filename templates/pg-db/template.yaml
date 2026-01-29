@@ -1,13 +1,15 @@
+
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: create-daki-postgres
-  title: Novo Banco PostgreSQL (Correção de Escrita)
+  title: Novo Banco PostgreSQL (Simples)
 spec:
   owner: guest
   type: service
+
   parameters:
-    - title: Dados do Banco
+    - title: Configuracoes Basicas
       required: [db_name]
       properties:
         db_name:
@@ -19,7 +21,6 @@ spec:
       action: fetch:template
       input:
         url: ./content
-        # Força a remoção do .njk e o preenchimento das variáveis
         templateFileExtension: true
         values:
           db_name: ${{ parameters.db_name }}
@@ -27,13 +28,15 @@ spec:
     - id: publish
       action: publish:github:pull-request
       input:
-        repoUrl: "github.com?owner=spaschoalick&repo=backstage"
+        repoUrl: github.com?owner=spaschoalick&repo=backstage
         branchName: main
-        targetBranchName: "infra-${{ parameters.db_name }}-${{ 'now' | date('HHmm') }}"
+        # REGRAS PARA FUNCIONAR:
+        # 1. Removi o 'now' | date porque seu Backstage não está processando ele aqui.
+        # 2. Usei apenas o parâmetro puro.
+        targetBranchName: infra-${{ parameters.db_name }}
         title: "infra: novo banco ${{ parameters.db_name }}"
         description: "PR gerado via Backstage"
-        # Garante que o arquivo vá para a pasta correta no repo
-        targetPath: "database/instances/${{ parameters.db_name }}"
+        targetPath: database/instances/${{ parameters.db_name }}
 
   output:
     links:
