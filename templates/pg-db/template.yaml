@@ -3,7 +3,6 @@ kind: Template
 metadata:
   name: create-daki-postgres
   title: Novo Banco PostgreSQL (Simples)
-  description: Gera o manifesto com o nome correto
 spec:
   owner: guest
   type: service
@@ -21,6 +20,7 @@ spec:
       action: fetch:template
       input:
         url: ./content
+        templateFileExtension: true
         values:
           db_name: ${{ parameters.db_name }}
 
@@ -29,10 +29,10 @@ spec:
       input:
         repoUrl: "github.com?owner=spaschoalick&repo=backstage"
         branchName: main
-        # Adicionando um número aleatório simples para evitar conflito de branch
-        targetBranchName: "infra-db-${{ parameters.db_name }}-v2"
+        # Usando um nome de branch estático para o teste, mas mude o db_name no form
+        targetBranchName: "infra-db-${{ parameters.db_name }}"
         title: "infra: novo banco ${{ parameters.db_name }}"
-        description: "PR gerado automaticamente pelo Backstage"
+        description: "PR gerado via Backstage"
         targetPath: "database/instances/${{ parameters.db_name }}"
 
   output:
