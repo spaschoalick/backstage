@@ -2,7 +2,7 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: create-daki-postgres
-  title: Novo Banco PostgreSQL (Versao Blindada)
+  title: Novo Banco PostgreSQL (Teste Final)
 spec:
   owner: guest
   type: service
@@ -13,7 +13,6 @@ spec:
         db_name:
           title: Nome do Banco
           type: string
-
   steps:
     - id: fetch
       action: fetch:template
@@ -23,42 +22,16 @@ spec:
         values:
           db_name: ${{ parameters.db_name }}
 
-apiVersion: scaffolder.backstage.io/v1beta3
-kind: Template
-metadata:
-  name: create-daki-postgres
-  title: Novo Banco PostgreSQL (Padrão Alternativo)
-spec:
-  owner: guest
-  type: service
-  parameters:
-    - title: Dados
-      required: [db_name]
-      properties:
-        db_name:
-          title: Nome do Banco
-          type: string
-
-  steps:
-    - id: fetch
-      action: fetch:template
-      input:
-        url: ./content
-        values:
-          db_name: ${{ parameters.db_name }}
-
-    # Este passo força o Backstage a processar o workspace antes de falar com o GitHub
     - id: publish
       action: publish:github:pull-request
       input:
-        repoUrl: github.com?owner=spaschoalick&repo=backstage
+        repoUrl: "github.com?owner=spaschoalick&repo=backstage"
         branchName: main
-        # Forçando o targetBranch para uma string que o Octokit entenda melhor
-        targetBranchName: "infra-db-${{ parameters.db_name }}"
+        # TESTE: Nome fixo para saber se o problema são as variáveis ${{ }}
+        targetBranchName: branch-teste-estatica-01
         title: "infra: banco ${{ parameters.db_name }}"
-        description: "PR gerado via Backstage"
-        # Deixe o targetPath vazio ou fixo para testar se ele para de bugar na URL
-        targetPath: database/instances
+        description: "Teste de PR"
+        targetPath: "database/instances/${{ parameters.db_name }}"
 
   output:
     links:
