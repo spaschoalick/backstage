@@ -1,0 +1,7 @@
+apiVersion: database.example.org/v1alpha1
+kind: PostgreSQLInstance
+metadata:
+  name: ${{ values.name }}
+spec:
+  parameters:
+    storageGB: 20
