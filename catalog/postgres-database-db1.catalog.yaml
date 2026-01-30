@@ -2,12 +2,11 @@ apiVersion: backstage.io/v1alpha1
 kind: Resource
 metadata:
   name: postgres-database-db1
-  description: PostgreSQL db1 provisionado via Crossplane
-  annotations:
-    backstage.io/managed-by-location: github:https://github.com/spaschoalick/backstage
-    crossplane.io/claim-kind: DakiPostgresDatabase
-    crossplane.io/claim-name: postgres-database-db1
+  description: PostgreSQL provisionado via Crossplane
+  tags:
+    - postgres
+    - crossplane
 spec:
   type: database
-  owner: group:platform
-  system: daki
+  owner: group:default/daki
+  lifecycle: production
