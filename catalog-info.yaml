@@ -1,8 +1,0 @@
-apiVersion: backstage.io/v1alpha1
-kind: Location
-metadata:
-  name: root-location
-spec:
-  type: github
-  targets:
-    - https://github.com/spaschoalick/backstage/blob/main/databases/catalog-info.yaml
