@@ -1,0 +1,11 @@
+apiVersion: daki.database.example.com/v1alpha1
+kind: DakiPostgresDatabase
+metadata:
+  name: "${{ parameters.databaseName }}"
+spec:
+  parameters:
+    databaseName: "${{ parameters.databaseName }}"
+    connectionLimit: "${{ parameters.connectionLimit | default(-1) }}"
+    allowConnections: "${{ parameters.allowConnections | default(true) }}"
+    deletionPolicy: "${{ parameters.deletionPolicy | default('Delete') }}"
+    providerConfigRef: "${{ parameters.providerConfigRef | default('poc-postgres-aurora') }}"
