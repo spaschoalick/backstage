@@ -1,9 +1,0 @@
-apiVersion: backstage.io/v1alpha1
-kind: Component
-metadata:
-  name: postgres-database
-  namespace: default
-spec:
-  type: database
-  lifecycle: experimental
-  owner: user:development/guest
