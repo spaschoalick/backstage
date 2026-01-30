@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "${{ parameters.databaseName }}"
+  description: "Banco PostgreSQL definido via manifest no Backstage"
+spec:
+  type: service
+  lifecycle: experimental
+  owner: "${{ parameters.owner }}"
