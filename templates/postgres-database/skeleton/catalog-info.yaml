@@ -1,8 +1,0 @@
-apiVersion: backstage.io/v1alpha1
-kind: Resource
-metadata:
-  name: ${{ values.name }}-postgres
-spec:
-  type: database
-  owner: teste
-  system: databases
