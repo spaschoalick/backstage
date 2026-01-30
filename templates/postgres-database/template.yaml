@@ -1,0 +1,45 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: postgres-database
+  title: Criar Banco PostgreSQL (somente skeleton)
+  description: Template para gerar manifests de PostgreSQL via Crossplane
+spec:
+  owner: "team@example.com"
+  type: service
+  parameters:
+    - title: Nome do Banco
+      type: string
+      name: databaseName
+    - title: Owner
+      type: string
+      name: owner
+    - title: Limite de conexões (opcional)
+      type: number
+      name: connectionLimit
+      required: false
+    - title: Permitir conexões (opcional)
+      type: boolean
+      name: allowConnections
+      required: false
+    - title: Deletion policy (opcional)
+      type: string
+      name: deletionPolicy
+      required: false
+    - title: ProviderConfigRef (opcional)
+      type: string
+      name: providerConfigRef
+      required: false
+  steps:
+    - id: fetch
+      name: Copiar skeleton
+      action: fetch:template
+      input:
+        url: ./skeleton
+    - id: log
+      name: Apenas log
+      action: execute:shell
+      input:
+        script: ./skeleton/bootstrap.sh
+        env:
+          DATABASE_NAME: "${{ parameters.databaseName }}"
