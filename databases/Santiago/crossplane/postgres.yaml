@@ -1,0 +1,16 @@
+apiVersion: database.example.org/v1alpha1
+kind: PostgreSQLInstance
+metadata:
+  name: Santiago
+  labels:
+    app.kubernetes.io/managed-by: backstage
+    app.kubernetes.io/name: Santiago
+spec:
+  parameters:
+    databaseName: Santiago
+    storageGB: 20
+    version: "15"
+    highAvailability: false
+
+  compositionRef:
+    name: postgres-default
