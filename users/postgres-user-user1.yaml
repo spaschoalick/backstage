@@ -1,0 +1,10 @@
+apiVersion: daki.database.example.com/v1alpha1
+kind: DakiPostgresUser
+metadata:
+  name: postgres-user-user1
+spec:
+  parameters:
+    username: user1
+    database: invr_new
+    schema: public
+    accessLevel: readonly
