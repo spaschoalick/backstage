@@ -1,16 +1,15 @@
-apiVersion: database.example.org/v1alpha1
-kind: PostgreSQLInstance
+apiVersion: daki.database.example.com/v1alpha1
+kind: DakiPostgresDatabase
 metadata:
-  name: teste
-  labels:
-    app.kubernetes.io/managed-by: backstage
-    app.kubernetes.io/name: teste
+  name: 
 spec:
   parameters:
     databaseName: teste
-    storageGB: 20
-    version: "15"
-    highAvailability: false
 
-  compositionRef:
-    name: postgres-default
+    # Configurações opcionais
+    connectionLimit: -1
+    allowConnections: true
+    deletionPolicy: Delete
+
+    # Provider config (default)
+    providerConfigRef: poc-postgres-aurora
