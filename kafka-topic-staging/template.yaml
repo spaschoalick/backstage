@@ -1,0 +1,73 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: kafka-topic-staging
+  title: Kafka Topic - Staging
+  description: Cria um tópico Kafka no ambiente de staging via Crossplane
+  tags:
+    - kafka
+    - crossplane
+    - staging
+spec:
+  owner: platform-team
+  type: service
+  
+  parameters:
+    - title: Informações do Tópico
+      required:
+        - topicName
+      properties:
+        topicName:
+          title: Nome do Tópico
+          type: string
+          description: Nome do tópico Kafka a ser criado
+          ui:autofocus: true
+          ui:placeholder: meu-topico-01
+        
+        partitions_count:
+          title: Número de Partições
+          type: integer
+          description: Quantidade de partições do tópico
+          default: 1
+          minimum: 1
+        
+        deletionPolicy:
+          title: Política de Deleção
+          type: string
+          description: O que fazer ao deletar o recurso
+          default: Delete
+          enum:
+            - Delete
+            - Orphan
+          enumNames:
+            - Delete (remove o tópico do Kafka)
+            - Orphan (mantém o tópico no Kafka)
+
+  steps:
+    - id: fetch
+      name: Gerar Manifesto Crossplane
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          topicName: ${{ parameters.topicName }}
+          partitions_count: ${{ parameters.partitions_count }}
+          deletionPolicy: ${{ parameters.deletionPolicy }}
+
+    - id: apply
+      name: Aplicar no Kubernetes
+      action: kubernetes:apply
+      input:
+        manifestPath: kafka-topic.yaml
+        clusterName: local
+
+  output:
+    text:
+      - title: Tópico Criado
+        content: |
+          O tópico **${{ parameters.topicName }}** foi criado com sucesso no ambiente de staging!
+          
+          Para verificar o status:
+          ```bash
+          kubectl get dakikafkatopic ${{ parameters.topicName }} -n default
+          ```
